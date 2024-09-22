@@ -17,7 +17,7 @@ type Event struct {
 
 var events = []Event{}
 
-func (e Event) Save() {
+func (e Event) Save() error {
 	query := `	
 	INSERT INTO events(name, description, localtion, date_time, user_id) 
 	VALUES (?, ?, ?, ?, ?)`
@@ -25,26 +25,49 @@ func (e Event) Save() {
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
-		return
+		return err
 	}
 
 	defer stmt.Close()
+	// Exec จะใช้กับ insert or update data ที่มีการ change data
 	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
 
 	if err != nil {
-		return
+		return err
 	}
 
 	id, err := result.LastInsertId()
 	e.ID = id
-
 	// events = append(events, e)
+	return err
 }
 
-func GetAllEvents() []Event {
-	return events
+func GetAllEvents() ([]Event, error) {
+	query := `SELECT * FROM events`
+	// query จะใช้กับการ get data ในรูปแบบ rows
+	rows, err := db.DB.Query(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// ต้อง close เสมอเมื่อ functions ทำเสร็จ
+	defer rows.Close()
+
+	var events []Event
+	for rows.Next() {
+		var event Event
+		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+
+	return events, err
 }
 
 func main() {
-
 }
