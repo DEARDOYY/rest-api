@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	db.InitDB()
+	defer db.CloseDB()
+
 	server := gin.Default()
 
 	// GET ,POST ,PUT ,PATCH ,DELETE

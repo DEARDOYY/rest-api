@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -9,28 +10,29 @@ import (
 var DB *sql.DB
 
 func InitDB() {
-	DB, err := sql.Open("sqlite3", "api.db")
-
+	var err error
+	DB, err = sql.Open("sqlite3", "api.db")
 	if err != nil {
-		panic("Could not connect to database.")
+		log.Fatal("Could not connect to database:", err)
 	}
 
-	err = DB.Ping()
-	if err != nil {
-		panic("Error connecting to the database")
+	// Check if database connection is successful
+	if err := DB.Ping(); err != nil {
+		log.Fatal("Error connecting to the database:", err)
 	}
 
-	if DB == nil {
-		panic("Database is not initialized")
-	}
-
-	// pool connection
+	// Configure the database connection pool
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(5)
 
-	createTables()
+	createTables() // Call your table creation function
+}
 
-	defer DB.Close()
+// Call this function when the application is shutting down
+func CloseDB() {
+	if DB != nil {
+		DB.Close()
+	}
 }
 
 func createTables() {
