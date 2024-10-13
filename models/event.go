@@ -22,6 +22,7 @@ func (e Event) Save() error {
 	INSERT INTO events(name, description, localtion, date_time, user_id) 
 	VALUES (?, ?, ?, ?, ?)`
 
+	// Prepare() + stmt.Exec() when we inserted data into the database
 	stmt, err := db.DB.Prepare(query)
 
 	if err != nil {
@@ -44,7 +45,9 @@ func (e Event) Save() error {
 
 func GetAllEvents() ([]Event, error) {
 	query := `SELECT * FROM events`
+
 	// query จะใช้กับการ get data ในรูปแบบ rows
+	// DB.Query() when we fetched data from the database
 	rows, err := db.DB.Query(query)
 
 	if err != nil {
@@ -67,6 +70,19 @@ func GetAllEvents() ([]Event, error) {
 	}
 
 	return events, err
+}
+
+func GetEventByID(id int64) (*Event, error) {
+	query := "SELECT * FROM events WHERE id = ?"
+	row := db.DB.QueryRow(query, id)
+
+	var event Event
+	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &event, nil
 }
 
 func main() {

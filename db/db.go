@@ -46,6 +46,7 @@ func createTables() {
 		user_id INTEGER
 	)`
 
+	// DB.Exec()
 	_, err := DB.Exec(createEventsTable)
 
 	if err != nil {
