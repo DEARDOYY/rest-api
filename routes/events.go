@@ -37,6 +37,7 @@ func getEvent(context *gin.Context) {
 func crateEvent(context *gin.Context) {
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
+	// log.Println(err)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
 		return
