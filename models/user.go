@@ -1,6 +1,9 @@
 package models
 
-import "example.com/rest-api/db"
+import (
+	"example.com/rest-api/db"
+	"example.com/rest-api/utils"
+)
 
 type User struct {
 	ID       int64
@@ -19,8 +22,13 @@ func (u User) Save() error {
 
 	defer stmt.Close()
 
+	hashPassword, err := utils.HashPassword(u.Password)
+	if err != nil {
+		return err
+	}
+
 	// Exec จะใช้กับ insert or update data ที่มีการ change data
-	result, err := stmt.Exec(u.Email, u.Password)
+	result, err := stmt.Exec(u.Email, hashPassword)
 	if err != nil {
 		return err
 	}
