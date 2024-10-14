@@ -10,4 +10,5 @@ func RegusterRoutes(server *gin.Engine) {
 	server.POST("/events", crateEvent)
 	server.PUT("/events/:id", updateEvent)
 	server.DELETE("/events/:id", deleteEvent)
+	server.POST("/signup")
 }
