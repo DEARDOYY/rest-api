@@ -24,7 +24,6 @@ func (e Event) Save() error {
 
 	// Prepare() + stmt.Exec() when we inserted data into the database
 	stmt, err := db.DB.Prepare(query)
-
 	if err != nil {
 		return err
 	}
@@ -32,7 +31,6 @@ func (e Event) Save() error {
 	defer stmt.Close()
 	// Exec จะใช้กับ insert or update data ที่มีการ change data
 	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
-
 	if err != nil {
 		return err
 	}
@@ -49,7 +47,6 @@ func GetAllEvents() ([]Event, error) {
 	// query จะใช้กับการ get data ในรูปแบบ rows
 	// DB.Query() when we fetched data from the database
 	rows, err := db.DB.Query(query)
-
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +58,6 @@ func GetAllEvents() ([]Event, error) {
 	for rows.Next() {
 		var event Event
 		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
-
 		if err != nil {
 			return nil, err
 		}
@@ -85,5 +81,28 @@ func GetEventByID(id int64) (*Event, error) {
 	return &event, nil
 }
 
-func main() {
+func (event Event) Update() error {
+	query := "UPDATE events SET name = ?, description = ?, localtion = ?, date_time = ? WHERE id = ?"
+	smst, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer smst.Close()
+	_, err = smst.Exec(event.Name, event.Description, event.Location, event.DateTime, event.ID)
+
+	return err
+}
+
+func (event Event) Delete() error {
+	query := "DELETE FROM events WHERE id = ?"
+	smst, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer smst.Close()
+	_, err = smst.Exec(event.ID)
+
+	return err
 }
