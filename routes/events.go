@@ -35,6 +35,11 @@ func getEvent(context *gin.Context) {
 }
 
 func crateEvent(context *gin.Context) {
+	token := context.Request.Header.Get("Authorization")
+	if token == "" {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not anthorized."})
+	}
+
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
 	// log.Println(err)
