@@ -10,9 +10,14 @@ func RegusterRoutes(server *gin.Engine) {
 	// ถ้าอยู่ใน package เดียวกันไม่ต้อง import
 	server.GET("/events", getEvents)
 	server.GET("/events/:id", getEvent)
-	server.POST("/events", middlewares.Authentiate, crateEvent)
-	server.PUT("/events/:id", updateEvent)
-	server.DELETE("/events/:id", deleteEvent)
+
+	// ทำ group ที่ต้องการ authen
+	authenticated := server.Group("/")
+	authenticated.Use(middlewares.Authentiate)
+	authenticated.POST("/events", crateEvent)
+	authenticated.PUT("/events/:id", updateEvent)
+	authenticated.DELETE("/events/:id", deleteEvent)
+
 	server.POST("/signup", signup)
 	server.POST("login", login)
 }
