@@ -17,6 +17,8 @@ func RegusterRoutes(server *gin.Engine) {
 	authenticated.POST("/events", crateEvent)
 	authenticated.PUT("/events/:id", updateEvent)
 	authenticated.DELETE("/events/:id", deleteEvent)
+	authenticated.POST("events/:id/register", registerForEvent)
+	authenticated.DELETE("events/:id/register")
 
 	server.POST("/signup", signup)
 	server.POST("login", login)
